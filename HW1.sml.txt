@@ -1,0 +1,237 @@
+(****************************************)
+(*      Name : Yeji Chung  (#11500446)  *)
+(*      File : HW1.sml                  *)
+(*      Due Date: 9.12.2018             *)
+(****************************************)
+
+(*Problem 1*)
+(* (a)     *)
+fun exists (x,[]) = false
+| exists (x, y::rest) = if (x=y) then true else exists (x,rest);
+
+(* (b)     *)
+(*The type is ''a instead of 'a because the if-else statement was needed, so the comparasion values are required.*)
+
+(* (c)     *)
+fun countInList L x =
+let
+	val cnt=0
+	fun countIL [] x cnt = cnt
+	| countIL  (y::rest) x cnt = if (x=y) then (countIL rest x cnt+1) else (countIL rest x cnt)
+in
+countIL L x cnt
+end;
+
+
+(*Problem 2*)
+fun listDiff (L1,L2) =
+let	
+	fun listD [] L2 L3 = L3
+	 | listD (x::rest1) [] L3 = x::(listD rest1 [] L3)
+	 | listD (x::rest1) (y::rest2) L3 = if (countInList (x::rest1) x)>(countInList L2 x) then x::(listD rest1 (y::rest2) L3) else listD rest1 (y::rest2) L3
+in
+listD L1 L2 []
+end; 
+
+	 
+(*Problem 3*)
+fun firstN L1 n = 
+let 
+	val L2=[]
+	fun firstNL [] n L2 = []
+	 | firstNL (x::rest) 0 L2 = L2
+	 | firstNL (x::rest) n L2 = x::(firstNL rest (n-1) L2)
+in
+firstNL L1 n L2
+end;
+
+
+(*Problem 4*)
+(* (a)     *)
+val buses = [
+("Lentil",["Chinook", "Orchard", "Valley", "Emerald","Providence",
+"Stadium", "Main", "Arbor", "Sunnyside", "Fountain", "Crestview",
+"Wheatland", "Walmart", "Bishop", "Derby", "Dilke"]),
+("Wheat",["Chinook", "Orchard", "Valley", "Maple","Aspen",
+"TerreView", "Clay", "Dismores", "Martin", "Bishop", "Walmart",
+"PorchLight", "Campus"]),
+("Silver",["TransferStation", "PorchLight", "Stadium",
+"Bishop","Walmart", "Shopco", "RockeyWay"]),
+("Blue",["TransferStation", "State", "Larry", "TerreView","Grand",
+"TacoBell", "Chinook", "Library"]),
+("Gray",["TransferStation", "Wawawai", "Main",
+"Sunnyside","Crestview", "CityHall", "Stadium", "Colorado"])
+]
+
+fun busFinder str buses =
+let 
+	fun BF str   [] L1 = L1
+	 | BF str ((y , [])::restbus) L1 = BF str (restbus) L1
+	 | BF str ((y, x::rest)::restbus) L1 = if (exists (str, x::rest) =false) then (BF str (restbus) L1) else  y::(BF str (restbus) L1)
+in
+BF str buses []
+end;
+
+(* (b)     *)
+(* The type is 'b instead of 'a because the type of 'b must be different to ''a.  *)
+
+
+(*Problem 5*)
+fun parallelResistors L = 
+let
+	val sum = 0.0;
+	fun RR [] sum =sum
+	 | RR (r::rest) sum = 1.0/r + (RR rest sum)
+in
+ 1.0/(RR L sum)
+end;
+
+
+(*Problem 6*)
+fun pairNleft(N , List)=
+let
+	fun length [] =0
+	 | length (_::restlength) = 1 + (length restlength)
+
+	fun revappend [] revL=revL
+	 | revappend (revx::revrest) revL = revappend revrest (revx::revL)
+
+	val revList = (revappend List [])
+	
+	fun append N [] L1 = L1
+	 | append 0 (x::rest) L1 = L1
+	 | append N (x::rest) L1 = if ( (length (x::rest)) < N ) then (append N rest (x::L1)) else (append (N-1) rest (x::L1))
+
+	fun delete 0 L3= L3
+	 | delete N  [] = []
+	 | delete N (z::rest3) = delete (N-1) rest3
+	
+
+	fun pL N [] L2 = L2
+	 | pL N List L2 = (pL N (delete N List) ((append N List [])::L2))
+in
+pL N revList []
+end;	
+
+fun pairNright(N , List)=
+let
+	fun length [] =0
+	 | length (_::restlength) = 1 + (length restlength)
+	
+	fun append N [] L1 = L1
+	 | append 0 (x::rest) L1 = L1
+	 | append N (x::rest) L1 = if ( (length (x::rest)) < N ) then (x::(append N rest L1)) else (x::(append (N-1) rest L1))
+
+	fun delete 0 L3= L3
+	 | delete N  [] = []
+	 | delete N (z::rest3) = delete (N-1) rest3
+	
+
+	fun pL N [] L2 = L2
+	 | pL N List L2 = (append N List [])::(pL N (delete N List) L2)
+
+in
+pL N List []
+end;	
+
+
+
+
+(*----------------------Test Functions--------------*)
+(* 1-(a) test   *)
+fun existsTest () =
+let 
+ val test1 = (exists("a", ["b", "c", "d"]) = false)
+ val test2 = (exists( (1,"c"), [(1,"a"),(1,"b"), (1,"c")])=true)
+in
+ print ("\n-----Test Problem1 - exists ------------ \n" ^
+ " exists test1: " ^ Bool.toString(test1) ^ "\n" ^
+ " exists test2: " ^ Bool.toString(test2) ^ "\n" )
+end
+val _ = existsTest ();
+
+(* 1-(c) test   *)
+fun countInListTest () =
+let 
+ val test1 = (countInList [1,3,2,4,1,3,2,4,1,3,2,4] 3 = 3)
+ val test2 = (countInList[ (1,"c"), (1,"a"),(1,"b"), (1,"c")] (1,"c") = 2)
+in
+ print ("\n-----Test Problem1 - countInList ------------ \n" ^
+ " countInList test1: " ^ Bool.toString(test1) ^ "\n" ^
+ " countInList test2: " ^ Bool.toString(test2) ^ "\n" )
+end
+val _ = countInListTest ();
+
+
+(* 2- test   *)
+fun listDifftest () =
+let 
+ val test1 = (listDiff ([[2,3,4], [1,2], [2,3], [1,2], [1,2]],[[1,2], [2,3], [3,4]]) = [[2,3,4],[1,2],[1,2]])
+ val test2 = (listDiff ([1,4,3,2,1],[3,3,1,5]) = [1,4,2])
+in
+ print ("\n-----Test Problem 2 - listDiff ------------ \n" ^
+ " listDiff test1: " ^ Bool.toString(test1) ^ "\n" ^
+ " listDiff test2: " ^ Bool.toString(test2) ^ "\n" )
+end
+val _ = listDifftest ();
+
+
+(* 3- test   *)
+fun firstNtest () =
+let 
+ val test1 = (firstN [[1,2], [1,2], [2,3,4], [2,4]] 3 = [[1,2], [1,2], [2,3,4]])
+ val test2 = (firstN ["1", "2", "3", "4", "5", "6"] 2 = ["1", "2"])
+in
+ print ("\n-----Test Problem 3 - firstN ------------ \n" ^
+ " firstN test1: " ^ Bool.toString(test1) ^ "\n" ^
+ " firstN test2: " ^ Bool.toString(test2) ^ "\n" )
+end
+val _ = firstNtest ();
+
+
+(* 4- test   *)
+fun busFindertest () =
+let 
+ val test1 = ((busFinder "Chinook" buses) = ["Lentil", "Wheat", "Blue"])
+ val test2 = ((busFinder "Library" buses) = ["Blue"])
+in
+ print ("\n-----Test Problem 4 - busFinder ------------ \n" ^
+ " busFinder test1: " ^ Bool.toString(test1) ^ "\n" ^
+ " busFinder test2: " ^ Bool.toString(test2) ^ "\n" )
+end
+val _ = busFindertest ();
+
+
+(* 5- test   *)
+fun parallelResistorstest () =
+let 
+ val test1 = Real.==((parallelResistors [2.0, 2.0, 4.0]), 0.8 )
+ val test2 = Real.==((parallelResistors [12.0, 6.0, 6.0, 4.0]), 1.5 )
+in
+ print ("\n-----Test Problem 5 - parallelResistors ------------ \n" ^
+ " parallelResistors test1: " ^ Bool.toString(test1) ^ "\n" ^
+ " parallelResistors test2: " ^ Bool.toString(test2) ^ "\n" )
+end
+val _ = parallelResistorstest ();
+
+
+(* 6- test   *)
+fun pairNtest () =
+let 
+ val test1 = (pairNleft (3, [ 1, 2, 3, 4, 5, 6, 7,8] ) = [ [1, 2], [3, 4, 5], [6, 7, 8] ])
+ val test2 = (pairNleft (5, [ 1, 2, 3, 4, 5, 6, 7,8] ) = [ [1, 2, 3], [4, 5, 6, 7, 8] ] )
+ val test3 = (pairNright (3, [ 1, 2, 3, 4, 5, 6, 7,8] ) = [ [1, 2, 3], [4, 5, 6], [7, 8] ] )
+ val test4 = (pairNright (5, [ 1, 2, 3, 4, 5, 6, 7,8] ) = [ [1, 2, 3, 4, 5], [6, 7, 8] ] )
+ val test5 = (pairNright (100, [ 1, 2, 3, 4, 5, 6, 7,8] ) = [ [1, 2, 3, 4, 5, 6, 7, 8] ] )
+in
+ print ("\n-----Test Problem 6 - pairNtest ------------ \n" ^
+ " pairNleft test1: " ^ Bool.toString(test1) ^ "\n" ^
+ " pairNleft test2: " ^ Bool.toString(test2) ^ "\n" ^
+ " pairNright test3: " ^ Bool.toString(test3) ^ "\n" ^
+ " pairNright test4: " ^ Bool.toString(test4) ^ "\n" ^
+ " pairNright test5: " ^ Bool.toString(test5) ^ "\n" )
+end;
+val _ = pairNtest ();
+
+
+
