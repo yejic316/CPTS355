@@ -1,0 +1,17 @@
+fun isNull1 L = if L=[] then true else false;
+
+fun isNull2 []=true
+| isNull2 (x::rest) = false;
+
+fun f1 x=x+1;
+
+val L1= [f1];
+
+fun X 0=0 | X 1 = 1 | X 2 = 2 | X a=10;
+
+
+val this = 3;
+
+fun append([],L)=L
+| append(x::rest,L) = x::append(rest,L)
+|append(L,[])=L;
